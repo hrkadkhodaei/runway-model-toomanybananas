@@ -8,6 +8,8 @@
 
 var bananas : 0..100 = 2;
 var notePresent: Boolean;
+var notePresent2: Boolean=False;
+var cnt:0..32767=0;
 type Person : either {
   Happy,
   Hungry,
@@ -27,6 +29,17 @@ rule step for state in roommates {
     }
 
     Hungry {
+      if (notePresent2 && cnt<20)
+      {
+        cnt+=1;
+      }
+      else
+      {
+        notePresent=False;
+        notePresent2=False;
+        cnt=0;
+      }
+      
       if bananas == 0 {
         if (notePresent) {
           // Roommate at store: try again later
@@ -47,13 +60,16 @@ rule step for state in roommates {
     }
 
     ReturningFromStore(bag) {
+      notePresent2=True;
       if (urandomRange(0, 9) == 0) {
         state = Failed;
       } else {
         bananas += bag.carrying;
         notePresent = False;
         state = Hungry;
-      }
+        notePresent2=False;
+        
+}
     }
     
     Failed {
